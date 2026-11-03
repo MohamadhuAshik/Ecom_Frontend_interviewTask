@@ -232,6 +232,9 @@ export default function QuickViewModal() {
                     src={formatImageUrl(currentModalImg)}
                     alt={product.name}
                     className="w-full h-full object-contain max-h-[340px] drop-shadow-2xl transition-all duration-300"
+                    onError={(e) => {
+                      e.target.src = "/images/product-headphones.jpg";
+                    }}
                   />
                   {product.badge && (
                     <span className="absolute top-2 left-2 px-3 py-1 bg-amber-400 text-black text-[10px] font-black uppercase tracking-wider rounded-full shadow-lg">
@@ -280,7 +283,14 @@ export default function QuickViewModal() {
                         }`}
                         title={`Photo ${idx + 1}`}
                       >
-                        <img src={formatImageUrl(img)} alt="" className="w-full h-full object-cover" />
+                        <img
+                          src={formatImageUrl(img)}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = "/images/product-headphones.jpg";
+                          }}
+                        />
                       </button>
                     ))}
                   </div>

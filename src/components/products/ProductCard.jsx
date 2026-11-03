@@ -73,6 +73,10 @@ export default function ProductCard({ product, index = 0, isVisible = true }) {
           src={formatImageUrl(currentImg)}
           alt={product.name}
           onLoad={() => setImgLoaded(true)}
+          onError={(e) => {
+            e.target.src = "/images/product-headphones.jpg";
+            setImgLoaded(true);
+          }}
           className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${imgLoaded ? "opacity-100" : "opacity-0"
             }`}
         />

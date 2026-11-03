@@ -395,6 +395,9 @@ export default function Navbar() {
                         <img
                           src={formatImageUrl(product.image)}
                           alt={product.name}
+                          onError={(e) => {
+                            e.target.src = "/images/product-headphones.jpg";
+                          }}
                           className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-lg bg-black/40 border border-white/10 flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0">

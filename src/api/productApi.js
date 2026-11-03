@@ -1,6 +1,19 @@
 import apiClient from "./apiClient";
 
 
+const STATIC_DEMO_IMAGES = new Set([
+  "product-headphones.jpg",
+  "product-watch.jpg",
+  "product-sneakers.jpg",
+  "product-bag.jpg",
+  "product-sunglasses.jpg",
+  "product-speaker.jpg",
+  "product-wallet.jpg",
+  "product-backpack.jpg",
+  "luxury-hero.jpg",
+  "hero-banner.jpg",
+]);
+
 export function formatImageUrl(img) {
   if (!img) return "/images/product-headphones.jpg";
   if (
@@ -11,14 +24,21 @@ export function formatImageUrl(img) {
   ) {
     return img;
   }
-  if (img.startsWith("/uploads") || img.startsWith("uploads/")) {
-    const cleanPath = img.startsWith("/") ? img : `/${img}`;
-    const host = (
-      import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api/v1"
-    ).replace(/\/api\/v1\/?$/, "");
-    return `${host}${cleanPath}`;
+
+  const cleanPath = img.startsWith("/") ? img : `/${img}`;
+  const fileName = cleanPath.split("/").pop();
+
+  // If it's one of the 8 static demo images bundled with the frontend
+  if (STATIC_DEMO_IMAGES.has(fileName)) {
+    return `/images/${fileName}`;
   }
-  return img;
+
+  // Any other uploaded image (whether in /images/ or /uploads/) is served by the backend host
+  const host = (
+    import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api/v1"
+  ).replace(/\/api\/v1\/?$/, "");
+
+  return `${host}${cleanPath}`;
 }
 
 

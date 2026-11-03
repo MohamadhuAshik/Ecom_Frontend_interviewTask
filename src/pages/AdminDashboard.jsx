@@ -1389,7 +1389,14 @@ export default function AdminDashboard() {
                     <div className="flex items-center gap-2 overflow-x-auto pb-1">
                       {editExistingImages.map((imgUrl, i) => (
                         <div key={i} className="relative w-14 h-14 rounded-xl overflow-hidden border border-white/10 group flex-shrink-0 bg-black/40">
-                          <img src={formatImageUrl(imgUrl)} alt="" className="w-full h-full object-cover" />
+                          <img
+                            src={formatImageUrl(imgUrl)}
+                            alt=""
+                            onError={(e) => {
+                              e.target.src = "/images/product-headphones.jpg";
+                            }}
+                            className="w-full h-full object-cover"
+                          />
                           <button
                             type="button"
                             onClick={() => handleRemoveExistingImage(i)}

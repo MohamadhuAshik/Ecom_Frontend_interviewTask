@@ -307,6 +307,9 @@ export default function CartDrawer() {
                     <img
                       src={imgUrl}
                       alt={prod.name || "Product"}
+                      onError={(e) => {
+                        e.target.src = "/images/product-headphones.jpg";
+                      }}
                       className="w-full h-full object-cover rounded-lg"
                     />
                   </div>
