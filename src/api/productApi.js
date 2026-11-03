@@ -45,9 +45,18 @@ export async function updateProductApi(id, productData, isFormData = false) {
       headers,
       body: productData,
     });
-    const data = await response.json().catch(() => ({}));
+    
+    let data;
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      data = await response.json().catch(() => ({}));
+    } else {
+      const text = await response.text().catch(() => "");
+      data = { message: text || `Server error (${response.status})` };
+    }
+
     if (!response.ok) {
-      throw new Error(data.message || "Failed to update product");
+      throw new Error(data.message || `Failed to update product (${response.status})`);
     }
     return data;
   }
@@ -72,9 +81,18 @@ export async function addProductApi(productData, isFormData = false) {
       headers,
       body: productData, // FormData object
     });
-    const data = await response.json().catch(() => ({}));
+
+    let data;
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      data = await response.json().catch(() => ({}));
+    } else {
+      const text = await response.text().catch(() => "");
+      data = { message: text || `Server error (${response.status})` };
+    }
+
     if (!response.ok) {
-      throw new Error(data.message || "Failed to create product");
+      throw new Error(data.message || `Failed to create product (${response.status})`);
     }
     return data;
   }

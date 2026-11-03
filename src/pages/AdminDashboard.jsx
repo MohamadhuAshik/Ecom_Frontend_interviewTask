@@ -144,6 +144,7 @@ export default function AdminDashboard() {
       const urls = selected.map((f) => URL.createObjectURL(f));
       setEditNewImagePreviews((prev) => [...prev, ...urls]);
     }
+    e.target.value = "";
   };
 
   const handleRemoveExistingImage = (indexToRemove) => {
@@ -266,6 +267,7 @@ export default function AdminDashboard() {
       const newUrls = selectedFiles.map((file) => URL.createObjectURL(file));
       setImagePreviews((prev) => [...prev, ...newUrls]);
     }
+    e.target.value = "";
   };
 
   const handleRemoveFile = (indexToRemove) => {
