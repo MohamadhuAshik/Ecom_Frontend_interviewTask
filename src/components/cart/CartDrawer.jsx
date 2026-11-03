@@ -33,6 +33,7 @@ export default function CartDrawer() {
   const [loading, setLoading] = useState(false);
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [clearing, setClearing] = useState(false);
+  const [checkoutNotice, setCheckoutNotice] = useState(false);
 
   const { isAuthenticated } = useAuth();
 
@@ -190,9 +191,8 @@ export default function CartDrawer() {
 
       {/* Side Drawer */}
       <div
-        className={`fixed top-0 right-0 bottom-0 z-50 w-full sm:w-[440px] bg-[#0c0c14] border-l border-white/10 shadow-2xl flex flex-col transition-transform duration-300 ease-out transform ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 bottom-0 z-50 w-full sm:w-[440px] bg-[#0c0c14] border-l border-white/10 shadow-2xl flex flex-col transition-transform duration-300 ease-out transform ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-5 sm:p-6 border-b border-white/10 bg-[#0f0f18]/80 backdrop-blur-md">
@@ -303,9 +303,8 @@ export default function CartDrawer() {
               return (
                 <div
                   key={item._id || itemId}
-                  className={`relative p-3.5 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-400/30 transition-all flex gap-3.5 items-center ${
-                    isItemBusy ? "opacity-60 pointer-events-none" : ""
-                  }`}
+                  className={`relative p-3.5 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-400/30 transition-all flex gap-3.5 items-center ${isItemBusy ? "opacity-60 pointer-events-none" : ""
+                    }`}
                 >
                   {/* Product Image */}
                   <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-xl bg-black/50 border border-white/10 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
@@ -410,15 +409,34 @@ export default function CartDrawer() {
               </div>
             </div>
 
+            {/* Feature Not Implemented Notice */}
+            {checkoutNotice && (
+              <div className="p-3 bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-amber-400/30 rounded-xl flex items-center justify-between gap-2.5 text-xs text-amber-200 animate-slide-down shadow-lg shadow-black/40">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-6 h-6 rounded-lg bg-amber-400/20 text-amber-400 flex items-center justify-center text-xs font-black flex-shrink-0">
+                    !
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-bold text-white text-xs">Feature Not Implemented</div>
+                    <div className="text-[11px] text-white/60 truncate">Checkout is currently disabled.</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setCheckoutNotice(false)}
+                  className="text-white/40 hover:text-white text-xs px-1.5 py-0.5 rounded cursor-pointer transition-colors"
+                  aria-label="Dismiss notice"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="space-y-2 pt-1">
               <button
                 onClick={() => {
-                  alert(
-                    `Proceeding to checkout with ${totalItems} items ($${totalAmount.toFixed(
-                      2
-                    )}). Order placement demo!`
-                  );
+                  setCheckoutNotice(true);
+                  setTimeout(() => setCheckoutNotice(false), 4000);
                 }}
                 className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 text-black font-black text-xs sm:text-sm hover:brightness-110 transition-all cursor-pointer shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2"
               >
