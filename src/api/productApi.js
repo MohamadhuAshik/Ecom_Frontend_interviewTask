@@ -1,8 +1,6 @@
 import apiClient from "./apiClient";
 
-/**
- * Resolves local upload paths to full backend URLs
- */
+
 export function formatImageUrl(img) {
   if (!img) return "/images/product-headphones.jpg";
   if (img.startsWith("http://") || img.startsWith("https://")) return img;
@@ -16,34 +14,24 @@ export function formatImageUrl(img) {
   return img;
 }
 
-/**
- * Fetch all products
- */
+
 export async function getProductsApi(params = {}) {
   const query = new URLSearchParams(params).toString();
   const endpoint = query ? `/products/get?${query}` : "/products/get";
   return await apiClient(endpoint, { method: "GET" });
 }
 
-/**
- * Fetch single product by id
- */
 export async function getProductByIdApi(id) {
   return await apiClient(`/products/${id}`, { method: "GET" });
 }
 
-/**
- * Delete product by id
- */
 export async function deleteProductApi(id) {
   return await apiClient(`/products/delete/${id}`, {
     method: "DELETE",
   });
 }
 
-/**
- * Update an existing product by id (handles multipart/form-data or JSON)
- */
+
 export async function updateProductApi(id, productData, isFormData = false) {
   if (isFormData) {
     const BASE_URL =
@@ -70,9 +58,7 @@ export async function updateProductApi(id, productData, isFormData = false) {
   });
 }
 
-/**
- * Add a new product (handles multipart/form-data for file uploads or JSON)
- */
+
 export async function addProductApi(productData, isFormData = false) {
   if (isFormData) {
     const BASE_URL =

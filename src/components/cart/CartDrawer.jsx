@@ -9,16 +9,12 @@ import {
 } from "../../api";
 import { useAuth } from "../../context/AuthContext";
 
-/**
- * Global helper to trigger opening the Cart Drawer from anywhere
- */
+
 export function openCartDrawer() {
   window.dispatchEvent(new CustomEvent("slipcart:open-cart"));
 }
 
-/**
- * Global helper to notify all components that cart data has updated
- */
+
 export function notifyCartUpdated(cartData) {
   window.dispatchEvent(
     new CustomEvent("slipcart:cart-updated", { detail: cartData })
