@@ -58,16 +58,20 @@ export default function ProductGrid() {
       const res = await getProductsApi(params);
 
       if (res.success && Array.isArray(res.products)) {
-        const normalized = res.products.map((p) => ({
-          ...p,
-          id: p._id || p.id,
-          image:
-            Array.isArray(p.image) && p.image.length > 0
-              ? p.image[0]
-              : typeof p.image === "string" && p.image
-                ? p.image
-                : "/images/product-headphones.jpg",
-        }));
+        const normalized = res.products.map((p) => {
+          const rawImages = Array.isArray(p.image)
+            ? p.image.filter(Boolean)
+            : typeof p.image === "string" && p.image
+            ? [p.image]
+            : [];
+          const imageList = rawImages.length > 0 ? rawImages : ["/images/product-headphones.jpg"];
+          return {
+            ...p,
+            id: p._id || p.id,
+            image: imageList,
+            images: imageList,
+          };
+        });
         setProducts(normalized);
       } else {
         setProducts([]);

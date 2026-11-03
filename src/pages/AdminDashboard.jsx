@@ -954,20 +954,53 @@ export default function AdminDashboard() {
                 <tbody className="divide-y divide-white/5 text-white/80">
                   {productList.map((item) => (
                     <tr key={item._id || item.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="py-3 px-3 font-semibold text-white flex items-center gap-3">
-                        {item.image && item.image[0] ? (
-                          <img
-                            src={formatImageUrl(item.image[0])}
-                            alt=""
-                            className="w-8 h-8 rounded-lg object-cover bg-black/40 border border-white/10 flex-shrink-0"
-                            onError={(e) => {
-                              e.target.style.display = "none";
-                            }}
-                          />
-                        ) : (
-                          <div className="w-8 h-8 rounded-lg bg-white/5 flex-shrink-0" />
-                        )}
-                        <span className="truncate max-w-[200px]">{item.name}</span>
+                      <td className="py-3 px-3 font-semibold text-white">
+                        <div className="flex items-center gap-3">
+                          {/* Multi-image thumbnail strip */}
+                          {(() => {
+                            const raw = Array.isArray(item.image)
+                              ? item.image
+                              : typeof item.image === "string" && item.image
+                              ? [item.image]
+                              : [];
+                            const imgs = raw.filter(Boolean);
+
+                            if (imgs.length === 0) {
+                              return <div className="w-8 h-8 rounded-lg bg-white/5 flex-shrink-0" />;
+                            }
+
+                            return (
+                              <div className="flex items-center gap-1.5 flex-shrink-0">
+                                {imgs.slice(0, 4).map((imgUrl, idx) => (
+                                  <img
+                                    key={idx}
+                                    src={formatImageUrl(imgUrl)}
+                                    alt=""
+                                    title={`Image ${idx + 1} of ${imgs.length}`}
+                                    className="w-8 h-8 rounded-lg object-cover bg-black/40 border border-white/10 hover:border-amber-400 hover:scale-125 transition-transform shadow-sm cursor-pointer flex-shrink-0"
+                                    onError={(e) => {
+                                      e.target.style.display = "none";
+                                    }}
+                                  />
+                                ))}
+                                {imgs.length > 4 && (
+                                  <span className="px-1.5 py-0.5 rounded bg-white/10 text-[9px] font-bold text-amber-300">
+                                    +{imgs.length - 4}
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })()}
+
+                          <div className="min-w-0">
+                            <span className="truncate max-w-[200px] block">{item.name}</span>
+                            {Array.isArray(item.image) && item.image.length > 1 && (
+                              <span className="text-[10px] text-amber-400/80 font-normal">
+                                📷 {item.image.length} photos
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </td>
                       <td className="py-3 px-3 capitalize text-amber-400">{item.category}</td>
                       <td className="py-3 px-3 font-bold">${item.price}</td>

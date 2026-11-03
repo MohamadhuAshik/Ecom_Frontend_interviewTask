@@ -21,6 +21,7 @@ export default function QuickViewModal() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [modalQty, setModalQty] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
 
@@ -100,6 +101,7 @@ export default function QuickViewModal() {
     setProduct(null);
     setError(null);
     setLoading(false);
+    setSelectedImageIndex(0);
     setModalQty(1);
     setAddingToCart(false);
   };
@@ -209,23 +211,81 @@ export default function QuickViewModal() {
         )}
 
         {/* 3. Success State with Product Data from API */}
-        {!loading && !error && product && (
-          <div className="grid grid-cols-1 md:grid-cols-2">
-            {/* Product Image Column */}
-            <div className="relative aspect-square md:aspect-auto bg-gradient-to-br from-[#161622] to-[#0c0c12] p-8 flex items-center justify-center overflow-hidden">
-              <img
-                src={formatImageUrl(
-                  Array.isArray(product.image) ? product.image[0] : product.image
+        {!loading && !error && product && (() => {
+          const rawModalImages = Array.isArray(product?.image)
+            ? product.image
+            : Array.isArray(product?.images)
+            ? product.images
+            : product?.image
+            ? [product.image]
+            : ["/images/product-headphones.jpg"];
+          const modalImages = rawModalImages.filter(Boolean);
+          const currentModalImg = modalImages[selectedImageIndex] || modalImages[0] || "/images/product-headphones.jpg";
+
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              {/* Product Image Column */}
+              <div className="relative bg-gradient-to-br from-[#161622] to-[#0c0c12] p-6 flex flex-col items-center justify-between overflow-hidden">
+                <div className="relative w-full aspect-square flex items-center justify-center">
+                  <img
+                    key={currentModalImg}
+                    src={formatImageUrl(currentModalImg)}
+                    alt={product.name}
+                    className="w-full h-full object-contain max-h-[340px] drop-shadow-2xl transition-all duration-300"
+                  />
+                  {product.badge && (
+                    <span className="absolute top-2 left-2 px-3 py-1 bg-amber-400 text-black text-[10px] font-black uppercase tracking-wider rounded-full shadow-lg">
+                      {product.badge}
+                    </span>
+                  )}
+
+                  {modalImages.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedImageIndex((prev) => (prev > 0 ? prev - 1 : modalImages.length - 1))
+                        }
+                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center text-sm font-bold border border-white/10 cursor-pointer shadow-lg transition-transform active:scale-95 z-10"
+                        title="Previous Photo"
+                      >
+                        ‹
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedImageIndex((prev) => (prev < modalImages.length - 1 ? prev + 1 : 0))
+                        }
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center text-sm font-bold border border-white/10 cursor-pointer shadow-lg transition-transform active:scale-95 z-10"
+                        title="Next Photo"
+                      >
+                        ›
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Thumbnails row for multiple photos */}
+                {modalImages.length > 1 && (
+                  <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-1 max-w-full justify-center">
+                    {modalImages.map((img, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setSelectedImageIndex(idx)}
+                        className={`w-12 h-12 rounded-xl overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 ${
+                          selectedImageIndex === idx
+                            ? "border-amber-400 ring-2 ring-amber-400/40 scale-105"
+                            : "border-white/10 opacity-60 hover:opacity-100"
+                        }`}
+                        title={`Photo ${idx + 1}`}
+                      >
+                        <img src={formatImageUrl(img)} alt="" className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
                 )}
-                alt={product.name}
-                className="w-full h-full object-contain max-h-[380px] drop-shadow-2xl"
-              />
-              {product.badge && (
-                <span className="absolute top-4 left-4 px-3 py-1 bg-amber-400 text-black text-[10px] font-black uppercase tracking-wider rounded-full shadow-lg">
-                  {product.badge}
-                </span>
-              )}
-            </div>
+              </div>
 
             {/* Product Details Column */}
             <div className="p-6 sm:p-8 flex flex-col justify-between">
@@ -325,8 +385,9 @@ export default function QuickViewModal() {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        );
+      })()}
     </div>
-  );
+  </div>
+);
 }

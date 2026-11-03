@@ -10,6 +10,17 @@ export default function ProductCard({ product, index = 0, isVisible = true }) {
   const { isAuthenticated } = useAuth();
   const [imgLoaded, setImgLoaded] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [activeImgIndex, setActiveImgIndex] = useState(0);
+
+  const rawImages = Array.isArray(product.image)
+    ? product.image
+    : Array.isArray(product.images)
+    ? product.images
+    : product.image
+    ? [product.image]
+    : ["/images/product-headphones.jpg"];
+  const images = rawImages.filter(Boolean);
+  const currentImg = images[activeImgIndex] || images[0] || "/images/product-headphones.jpg";
 
   const discount = product.originalPrice
     ? Math.round(
@@ -58,7 +69,8 @@ export default function ProductCard({ product, index = 0, isVisible = true }) {
         onClick={handleOpenQuickView}
       >
         <img
-          src={formatImageUrl(product.image)}
+          key={currentImg}
+          src={formatImageUrl(currentImg)}
           alt={product.name}
           onLoad={() => setImgLoaded(true)}
           className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${imgLoaded ? "opacity-100" : "opacity-0"
@@ -75,19 +87,80 @@ export default function ProductCard({ product, index = 0, isVisible = true }) {
 
 
         {product.badge && (
-          <div className="absolute top-3.5 left-3.5 px-3 py-1 bg-black/70 backdrop-blur-md border border-white/10 rounded-full shadow-lg">
+          <div className="absolute top-3.5 left-3.5 px-3 py-1 bg-black/70 backdrop-blur-md border border-white/10 rounded-full shadow-lg z-10">
             <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider">
               {product.badge}
             </span>
           </div>
         )}
 
+        {/* Multi-image Count Badge */}
+        {images.length > 1 && (
+          <div className="absolute top-3.5 right-3.5 px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-md border border-white/10 text-[10px] font-bold text-amber-300 flex items-center gap-1 shadow-lg z-10">
+            <svg className="w-3 h-3 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>{activeImgIndex + 1}/{images.length}</span>
+          </div>
+        )}
 
-        {discount > 0 && (
-          <div className="absolute top-3.5 right-3.5 px-2.5 py-1 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/20">
+        {discount > 0 && images.length <= 1 && (
+          <div className="absolute top-3.5 right-3.5 px-2.5 py-1 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/20 z-10">
             <span className="text-[10px] font-black text-black tracking-tight">
               -{discount}%
             </span>
+          </div>
+        )}
+
+        {/* Next / Prev Image Controls for Cards with Multiple Images */}
+        {images.length > 1 && (
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveImgIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+              }}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/75 hover:bg-black text-white flex items-center justify-center text-xs font-bold transition-all z-20 cursor-pointer border border-white/10"
+              title="Previous Photo"
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveImgIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+              }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/75 hover:bg-black text-white flex items-center justify-center text-xs font-bold transition-all z-20 cursor-pointer border border-white/10"
+              title="Next Photo"
+            >
+              ›
+            </button>
+
+            {/* Pagination Dots */}
+            <div className="absolute bottom-16 left-0 right-0 flex items-center justify-center gap-1.5 z-20">
+              {images.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImgIndex(i);
+                  }}
+                  onMouseEnter={(e) => {
+                    e.stopPropagation();
+                    setActiveImgIndex(i);
+                  }}
+                  className={`h-1 rounded-full transition-all cursor-pointer ${
+                    activeImgIndex === i
+                      ? "w-4 bg-amber-400"
+                      : "w-1.5 bg-white/40 hover:bg-white/70"
+                  }`}
+                  aria-label={`View photo ${i + 1}`}
+                />
+              ))}
+            </div>
           </div>
         )}
 
