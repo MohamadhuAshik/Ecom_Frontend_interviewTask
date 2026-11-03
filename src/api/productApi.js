@@ -3,7 +3,14 @@ import apiClient from "./apiClient";
 
 export function formatImageUrl(img) {
   if (!img) return "/images/product-headphones.jpg";
-  if (img.startsWith("http://") || img.startsWith("https://")) return img;
+  if (
+    img.startsWith("http://") ||
+    img.startsWith("https://") ||
+    img.startsWith("data:") ||
+    img.startsWith("blob:")
+  ) {
+    return img;
+  }
   if (img.startsWith("/uploads") || img.startsWith("uploads/")) {
     const cleanPath = img.startsWith("/") ? img : `/${img}`;
     const host = (
